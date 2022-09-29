@@ -1,0 +1,24 @@
+{
+    "debug.node.autoAttach": "on",
+    "debug.javascript.autoAttachFilter": "onlyWithFlag",
+    "rest-client.defaultHeaders": {
+        "User-Agent": "vscode-restclient",
+        "Accept-Language": "en"
+    },
+    "rest-client.environmentVariables": {
+        "$shared": {},
+        "localhost": {
+            "baseUrl": "http://localhost:8080",
+            "githubToken": "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"
+        },
+        "dev": {
+            "repo": "troyatomic/expressjs-typescript",
+            "baseUrl": "https://api.github.com",
+            "githubToken": "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"
+        },
+        "test": {
+            "baseUrl": "https://sentrikey-access-api-test.sentrilock.com",
+            "githubToken": "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"
+        }
+    }
+}
