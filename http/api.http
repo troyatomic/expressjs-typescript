@@ -7,3 +7,11 @@ Accept: application/vnd.github+json
 ###
 # localhost health
 GET {{baseUrl}}/health
+
+###
+# localhost get issue
+GET {{baseUrl}}/api/v1/github/troyatomic/expressjs-typescript/issue/2
+
+###
+# localhost image in issue
+GET {{baseUrl}}/api/v1/github/troyatomic/expressjs-typescript/issue/1/image
