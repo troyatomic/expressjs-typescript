@@ -7,12 +7,19 @@ type Issue = {
     body: string | null
 }
 
+type Comment = {
+    owner: string,
+    repo: string,
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    issue_number: string,
+    body: string;
+}
 
 export const register = (app: express.Application) => {
     const githubHeaders: AxiosRequestHeaders = {
         'accept': 'application/vnd.github+json',
         'authorization': `Bearer ${process.env.GITHUB_TOKEN}`
-    }
+    };
 
     // home page
     app.get("/", (req, res) => {
@@ -30,7 +37,7 @@ export const register = (app: express.Application) => {
             method: 'GET',
             headers: githubHeaders,
             url,
-        }
+        };
         void axios(options).then((response) => {
             // eslint-disable-next-line no-console
             console.log('response', response.data);
@@ -44,7 +51,7 @@ export const register = (app: express.Application) => {
             method: 'GET',
             headers: githubHeaders,
             url,
-        }
+        };
         void axios(options).then((response) => {
             const issue: Issue = response.data as Issue;
             // eslint-disable-next-line no-console
@@ -60,7 +67,7 @@ export const register = (app: express.Application) => {
             method: 'GET',
             headers: githubHeaders,
             url,
-        }
+        };
         void axios(options).then((response) => {
             const issue: Issue = response.data as Issue;
             let hasImage = false;
@@ -68,6 +75,28 @@ export const register = (app: express.Application) => {
                 hasImage = true
             }
             res.status(200).json({'containsImage': hasImage});
+        });
+    });
+
+    app.post("/api/v1/github/:owner/:repo/issue/:issue_number/comment", (req, res) => {
+        // eslint-disable-next-line no-console
+        console.log('body', req.body);
+        const comment: Comment = req.body as Comment;
+        const url = `${process.env.GITHUB_URL}/repos/${req.params.owner}/${req.params.repo}/issues/${req.params.issue_number}/comments`;
+        const options:AxiosRequestConfig = {
+            method: 'POST',
+            headers: githubHeaders,
+            data: comment,
+            url,
+        };
+        void axios(options).then((response) => {
+            // eslint-disable-next-line no-console
+            // console.log('response', response);
+            let messageResponse = "failed";
+            if (response.status < 400) {
+                messageResponse = "success";
+            }
+            res.status(response.status).json({'message': messageResponse});
         });
     });
 };
