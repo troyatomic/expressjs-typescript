@@ -1,10 +1,4 @@
 ###
-# Get Github Issues
-GET {{baseUrl}}/repos/{{repo}}/issues
-Authorization: Bearer {{githubToken}}
-Accept: application/vnd.github+json
-
-###
 # localhost health
 GET {{baseUrl}}/health
 
