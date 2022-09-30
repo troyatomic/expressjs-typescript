@@ -1,6 +1,5 @@
 import * as express from "express";
 import axios, { AxiosPromise, AxiosRequestConfig, AxiosRequestHeaders } from 'axios';
-import { InspectOptionsStylized } from "util";
 
 type Issue = {
     title: string,
