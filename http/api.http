@@ -14,13 +14,22 @@ GET {{baseUrl}}/api/v1/github/troyatomic/expressjs-typescript/issue/2
 
 ###
 # localhost image in issue
-GET {{baseUrl}}/api/v1/github/troyatomic/expressjs-typescript/issue/1/image
+GET {{baseUrl}}/api/v1/github/troyatomic/expressjs-typescript/issue/2/image
 
 ###
 # localhost image in issue
-POST {{baseUrl}}/api/v1/github/troyatomic/expressjs-typescript/issue/1/comment
+POST {{baseUrl}}/api/v1/github/troyatomic/expressjs-typescript/issue/2/comment
 Content-Type: application/json
 
 {
  "body": "hi troy"   
+}
+
+###
+# localhost identify
+POST {{baseUrl}}/api/v1/github/troyatomic/expressjs-typescript/issue/2/identify
+Content-Type: application/json
+
+{
+ "body": "I found an image in your issue at"   
 }
