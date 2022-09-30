@@ -28,8 +28,6 @@ const doesIssueHaveImage = (issueBody: string): boolean => {
 };
 
 const getIssue = (url: string): AxiosPromise => {
-    // eslint-disable-next-line no-console
-    console.log('here1');
     const options:AxiosRequestConfig = {
         method: 'GET',
         headers: getGithubHeaders(),
@@ -90,8 +88,6 @@ export const register = (app: express.Application) => {
     });
 
     app.post("/api/v1/github/:owner/:repo/issue/:issue_number/comment", (req, res) => {
-        // eslint-disable-next-line no-console
-        console.log('body', req.body);
         const comment: Comment = req.body as Comment;
         const url = `${process.env.GITHUB_URL}/repos/${req.params.owner}/${req.params.repo}/issues/${req.params.issue_number}/comments`;
         const options:AxiosRequestConfig = {
@@ -101,8 +97,6 @@ export const register = (app: express.Application) => {
             url,
         };
         void axios(options).then((response) => {
-            // eslint-disable-next-line no-console
-            // console.log('response', response);
             let messageResponse = "failed";
             if (response.status < 400) {
                 messageResponse = "success";
@@ -112,14 +106,9 @@ export const register = (app: express.Application) => {
     });
 
     app.post("/api/v1/github/:owner/:repo/issue/:issue_number/identify", (req, res) => {
-        // eslint-disable-next-line no-console
-        console.log('body', req.body);
         let url = `${process.env.GITHUB_URL}/repos/${req.params.owner}/${req.params.repo}/issues/${req.params.issue_number}`;
         void getIssue(url).then((response) => {
             const issue: Issue = response.data as Issue;
-
-            // eslint-disable-next-line no-console
-            console.log('issue', issue);
             const date = new Date();
             const comment: Comment = req.body as Comment;
             comment.body += ` ${date.toString()}`;
