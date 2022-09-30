@@ -36,6 +36,16 @@ const getIssue = (url: string): AxiosPromise => {
     return axios(options);
 };
 
+const postComment = (url: string, comment: string): AxiosPromise => {
+    const options:AxiosRequestConfig = {
+        method: 'POST',
+        headers: getGithubHeaders(),
+        data: { 'body': comment},
+        url,
+    };
+    return axios(options);
+};
+
 export const register = (app: express.Application) => {
 
     // home page
@@ -92,15 +102,9 @@ export const register = (app: express.Application) => {
 
     // POST comment
     app.post("/api/v1/github/:owner/:repo/issue/:issue_number/comment", (req, res) => {
-        const comment: Comment = req.body as Comment;
+        const body: Comment = req.body as Comment;
         const url = `${process.env.GITHUB_URL}/repos/${req.params.owner}/${req.params.repo}/issues/${req.params.issue_number}/comments`;
-        const options:AxiosRequestConfig = {
-            method: 'POST',
-            headers: getGithubHeaders(),
-            data: comment,
-            url,
-        };
-        void axios(options).then((response) => {
+        void postComment(url, body.body).then((response) => {
             let messageResponse = "failed";
             if (response.status < 400) {
                 messageResponse = "success";
@@ -114,18 +118,12 @@ export const register = (app: express.Application) => {
         let url = `${process.env.GITHUB_URL}/repos/${req.params.owner}/${req.params.repo}/issues/${req.params.issue_number}`;
         void getIssue(url).then((response) => {
             const issue: Issue = response.data as Issue;
-            const date = new Date();
-            const comment: Comment = req.body as Comment;
-            comment.body += ` ${date.toString()}`;
+            const body: Comment = req.body as Comment;
             if (doesIssueHaveImage(issue.body)) {
                 url = `${process.env.GITHUB_URL}/repos/${req.params.owner}/${req.params.repo}/issues/${req.params.issue_number}/comments`;
-                const options:AxiosRequestConfig = {
-                    method: 'POST',
-                    headers: getGithubHeaders(),
-                    data: comment,
-                    url,
-                };
-                void axios(options).then((commentResponse) => {
+                const date = new Date();
+                const comment  = `${body.body} ${date.toString()}`;
+                void postComment(url, comment).then((commentResponse) => {
                     let messageResponse = "failed";
                     if (commentResponse.status < 400) {
                         messageResponse = "success";

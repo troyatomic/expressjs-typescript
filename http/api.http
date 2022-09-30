@@ -7,16 +7,16 @@ GET {{baseUrl}}/health
 GET {{baseUrl}}/api/v1/github/troyatomic/expressjs-typescript/issue/2
 
 ###
-# localhost image in issue
+# localhost image
 GET {{baseUrl}}/api/v1/github/troyatomic/expressjs-typescript/issue/2/image
 
 ###
-# localhost image in issue
+# localhost comment
 POST {{baseUrl}}/api/v1/github/troyatomic/expressjs-typescript/issue/2/comment
 Content-Type: application/json
 
 {
- "body": "hi troy"   
+ "body": "hi joe"   
 }
 
 ###
