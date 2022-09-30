@@ -43,6 +43,7 @@ export const register = (app: express.Application) => {
         res.render("index");
     });
 
+    // health
     app.get("/health", (req, res) => {
         res.status(200).json({'status': 'OK'});
     });
@@ -62,6 +63,7 @@ export const register = (app: express.Application) => {
         });
     });
 
+    // GET issue
     app.get("/api/v1/github/:owner/:repo/issue/:issue_number", (req, res) => {
         const url = `${process.env.GITHUB_URL}/repos/${req.params.owner}/${req.params.repo}/issues/${req.params.issue_number}`;
         void getIssue(url).then((response) => {
@@ -70,6 +72,7 @@ export const register = (app: express.Application) => {
         });
     });
 
+    // GET image
     app.get("/api/v1/github/:owner/:repo/issue/:issue_number/image", (req, res) => {
         const url = `${process.env.GITHUB_URL}/repos/${req.params.owner}/${req.params.repo}/issues/${req.params.issue_number}`;
         const options:AxiosRequestConfig = {
@@ -87,6 +90,7 @@ export const register = (app: express.Application) => {
         });
     });
 
+    // POST comment
     app.post("/api/v1/github/:owner/:repo/issue/:issue_number/comment", (req, res) => {
         const comment: Comment = req.body as Comment;
         const url = `${process.env.GITHUB_URL}/repos/${req.params.owner}/${req.params.repo}/issues/${req.params.issue_number}/comments`;
@@ -105,6 +109,7 @@ export const register = (app: express.Application) => {
         });
     });
 
+    // POST identify
     app.post("/api/v1/github/:owner/:repo/issue/:issue_number/identify", (req, res) => {
         let url = `${process.env.GITHUB_URL}/repos/${req.params.owner}/${req.params.repo}/issues/${req.params.issue_number}`;
         void getIssue(url).then((response) => {
