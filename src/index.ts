@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 import express from "express";
 import path from "path";
-import * as routes from "./routes";
+import routes from "./routes";
 
 dotenv.config();
 
@@ -16,7 +16,7 @@ app.set("view engine", "ejs");
 app.use(express.static(path.join(__dirname, "public")));
 
 // Configure routes
-routes.register(app);
+app.use('/', routes);
 
 // start the express server
 app.listen(port, () => {
