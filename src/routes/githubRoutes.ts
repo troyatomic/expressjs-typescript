@@ -69,21 +69,24 @@ router.get("/api/v1/github/:owner/:repo/issue/:issue_number", async (req: Reques
 });
 
 // GET image
-router.get("/api/v1/github/:owner/:repo/issue/:issue_number/image", (req, res) => {
-    const url = `${process.env.GITHUB_URL}/repos/${req.params.owner}/${req.params.repo}/issues/${req.params.issue_number}`;
-    const options: AxiosRequestConfig = {
-        method: 'GET',
-        headers: getGithubHeaders(),
-        url,
-    };
-    void axios(options).then((response) => {
-        const issue: Issue = response.data as Issue;
-        let hasImage = false;
-        if (issue.body?.includes('<img')) {
-            hasImage = true
+router.get("/api/v1/github/:owner/:repo/issue/:issue_number/image", async(req, res) => {
+    try {
+        const issue = await githubServices.getIssue(req.params.owner, req.params.repo, req.params.issue_number);
+        if (issue != null) {
+            let hasImage = false;
+            if (issue.body?.includes('<img')) {
+                hasImage = true
+            }
+            res.status(200).json({ 'containsImage': hasImage });
+            return;
         }
-        res.status(200).json({ 'containsImage': hasImage });
-    });
+    } catch(error) {
+        // eslint-disable-next-line no-console
+        console.error(error);
+        res.status(500).json({error: 'an internal error occurred'});
+        return;
+    }
+    res.status(401).json({error: 'an error occurred'});
 });
 
 // POST comment
