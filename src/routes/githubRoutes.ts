@@ -1,5 +1,7 @@
+/* eslint-disable @typescript-eslint/no-misused-promises */
 import { Request, Response, Router } from 'express';
 import axios, { AxiosPromise, AxiosRequestConfig, AxiosRequestHeaders } from 'axios';
+import { GithubServices } from '../services/githubServices';
 
 const router = Router();
 
@@ -48,28 +50,22 @@ const postComment = (url: string, comment: string): AxiosPromise => {
     return axios(options);
 };
 
-// about page
-router.get("/about", (_req, res) => {
-    const url = `${process.env.GITHUB_URL}/repos/${process.env.GITHUB_REPO}/issues`
-    const options: AxiosRequestConfig = {
-        method: 'GET',
-        headers: getGithubHeaders(),
-        url,
-    };
-    void axios(options).then((response) => {
-        // eslint-disable-next-line no-console
-        console.log('response', response.data);
-        res.status(200).render('about');
-    });
-});
-
 // GET issue
-router.get("/api/v1/github/:owner/:repo/issue/:issue_number", (req, res) => {
-    const url = `${process.env.GITHUB_URL}/repos/${req.params.owner}/${req.params.repo}/issues/${req.params.issue_number}`;
-    void getIssue(url).then((response) => {
-        const issue: Issue = response.data as Issue;
-        res.status(200).json({ 'id': issue.id, 'title': issue.title, 'body': issue.body });
-    });
+router.get("/api/v1/github/:owner/:repo/issue/:issue_number", async (req: Request, res: Response) => {
+    if (req.params.owner && req.params.repo && req.params.issue_number) {
+        const githubServices = new GithubServices();
+        try {
+            const issue = await githubServices.getIssue(req.params.owner, req.params.repo, req.params.issue_number);
+            if (issue != null) {
+                res.status(200).json(issue);
+            }
+        } catch(error) {
+            // eslint-disable-next-line no-console
+            console.error(error);
+            res.status(500).json({});
+        }
+        res.status(401).json({error: 'an error occurred'});
+    }
 });
 
 // GET image
