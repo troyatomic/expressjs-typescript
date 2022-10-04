@@ -21,7 +21,7 @@ const doesIssueHaveImage = (issueBody: string): boolean => {
 router.get("/api/v1/github/:owner/:repo/issue/:issue_number", async (req: Request, res: Response) => {
     try {
         const issue: GithubIssue = await githubServices.getIssue(req.params.owner, req.params.repo, req.params.issue_number);
-        if (issue != null) {
+        if (issue) {
             res.status(200).json(issue);
             return;
         }
@@ -31,7 +31,7 @@ router.get("/api/v1/github/:owner/:repo/issue/:issue_number", async (req: Reques
         res.status(500).json({error: 'an internal error occurred'});
         return;
     }
-    res.status(401).json({error: 'an error occurred'});
+    res.status(200).json({error: 'an error occurred'});
 });
 
 // GET image
@@ -49,7 +49,7 @@ router.get("/api/v1/github/:owner/:repo/issue/:issue_number/image", async(req, r
         res.status(500).json({error: 'an internal error occurred'});
         return;
     }
-    res.status(401).json({error: 'an error occurred'});
+    res.status(200).json({error: 'an error occurred'});
 });
 
 // POST comment
@@ -87,8 +87,7 @@ router.post("/api/v1/github/:owner/:repo/issue/:issue_number/identify", async (r
         res.status(500).json({error: 'an internal error occurred'});
         return;
     }
-    res.status(401).json({error: 'an error occurred'});
+    res.status(200).json({error: 'an error occurred'});
 });
-// };
 
 export default router;

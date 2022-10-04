@@ -11,7 +11,7 @@
     "copy-assets": "ts-node tools/copyAssets",
     "tsc": "tsc",
     "clean": "rimraf dist/*",
-    "lint": "npx eslint \"{src,spec}/**/*.ts\" -c .eslintrc.js",
+    "lint": "npx eslint \"src/**/*.ts\" -c .eslintrc.js",
     "test": "jest --setupFiles dotenv/config"
   },
   "dependencies": {
