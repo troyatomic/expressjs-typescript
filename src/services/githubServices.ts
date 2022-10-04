@@ -39,8 +39,6 @@ const postGithubComment = (url: string, comment: string): AxiosPromise => {
 };
 
 export class GithubServices {
-    // eslint-disable-next-line no-empty-function
-    constructor(){}
 
     public async getIssue(owner: string, repo: string, issueNumber: string): Promise<GithubIssue> {
         const url = `${process.env.GITHUB_URL}/repos/${owner}/${repo}/issues/${issueNumber}`;
@@ -64,4 +62,5 @@ export class GithubServices {
             return { message: 'failed'};
         }
     }
+
 }
