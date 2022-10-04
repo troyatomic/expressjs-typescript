@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import { Request, Response, Router } from 'express';
 import axios, { AxiosPromise, AxiosRequestConfig, AxiosRequestHeaders } from 'axios';
-import { GithubServices } from '../services/githubServices';
+import { GithubIssue, GithubCommentResponse, GithubServices } from '../services/githubServices';
 
 const router = Router();
 const githubServices = new GithubServices();
@@ -54,7 +54,7 @@ const postComment = (url: string, comment: string): AxiosPromise => {
 // GET issue
 router.get("/api/v1/github/:owner/:repo/issue/:issue_number", async (req: Request, res: Response) => {
     try {
-        const issue = await githubServices.getIssue(req.params.owner, req.params.repo, req.params.issue_number);
+        const issue: GithubIssue = await githubServices.getIssue(req.params.owner, req.params.repo, req.params.issue_number);
         if (issue != null) {
             res.status(200).json(issue);
             return;
@@ -71,7 +71,7 @@ router.get("/api/v1/github/:owner/:repo/issue/:issue_number", async (req: Reques
 // GET image
 router.get("/api/v1/github/:owner/:repo/issue/:issue_number/image", async(req, res) => {
     try {
-        const issue = await githubServices.getIssue(req.params.owner, req.params.repo, req.params.issue_number);
+        const issue: GithubIssue = await githubServices.getIssue(req.params.owner, req.params.repo, req.params.issue_number);
         if (issue != null) {
             let hasImage = false;
             if (issue.body?.includes('<img')) {
@@ -90,16 +90,18 @@ router.get("/api/v1/github/:owner/:repo/issue/:issue_number/image", async(req, r
 });
 
 // POST comment
-router.post("/api/v1/github/:owner/:repo/issue/:issue_number/comment", (req, res) => {
-    const body: Comment = req.body as Comment;
-    const url = `${process.env.GITHUB_URL}/repos/${req.params.owner}/${req.params.repo}/issues/${req.params.issue_number}/comments`;
-    void postComment(url, body.body).then((response) => {
-        let messageResponse = "failed";
-        if (response.status < 400) {
-            messageResponse = "success";
-        }
-        res.status(response.status).json({ 'message': messageResponse });
-    });
+router.post("/api/v1/github/:owner/:repo/issue/:issue_number/comment", async (req, res) => {
+    const comment: Comment = req.body as Comment;
+    try {
+        const result = await githubServices.postComment(req.params.owner, req.params.repo, req.params.issue_number, comment.body);
+        res.status(200).json(result);
+        return;
+    } catch(error) {
+        // eslint-disable-next-line no-console
+        console.error(error);
+        res.status(500).json({error: 'an internal error occurred'});
+        return;
+    }
 });
 
 // POST identify

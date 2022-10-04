@@ -1,10 +1,14 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import axios, { AxiosPromise, AxiosRequestConfig, AxiosRequestHeaders, AxiosResponse } from 'axios';
 
-interface Issue {
+export interface GithubIssue {
     title: string,
     id: number,
     body: string | null
+}
+
+export interface GithubCommentResponse {
+    message: 'success' | 'failed'
 }
 
 const getGithubHeaders = () => {
@@ -24,19 +28,40 @@ const getGithubIssue = (url: string): AxiosPromise => {
     return axios(options);
 };
 
+const postGithubComment = (url: string, comment: string): AxiosPromise => {
+    const options: AxiosRequestConfig = {
+        method: 'POST',
+        headers: getGithubHeaders(),
+        data: { 'body': comment },
+        url,
+    };
+    return axios(options);
+};
+
 export class GithubServices {
     // eslint-disable-next-line no-empty-function
     constructor(){}
 
-    public async getIssue(owner: string, repo: string, issueNumber: string): Promise<Issue> {
+    public async getIssue(owner: string, repo: string, issueNumber: string): Promise<GithubIssue> {
         const url = `${process.env.GITHUB_URL}/repos/${owner}/${repo}/issues/${issueNumber}`;
         try {
-            const result: AxiosResponse = await getGithubIssue(url);
+            const response: AxiosResponse = await getGithubIssue(url);
             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-            const issue: Issue = result.data;
+            const issue: GithubIssue = response.data;
             return { 'id': issue.id, 'title': issue.title, 'body': issue.body };
         } catch(error) {
             return;
+        }
+    }
+
+    public async postComment(owner: string, repo: string, issueNumber: string, comment: string): Promise<GithubCommentResponse> {
+        const url = `${process.env.GITHUB_URL}/repos/${owner}/${repo}/issues/${issueNumber}/comments`;
+        try {
+            const response: AxiosResponse = await postGithubComment(url, comment);
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            return response.status < 400 ? { message: 'success' } : { message: 'success' };
+        } catch(error) {
+            return { message: 'failed'};
         }
     }
 }
