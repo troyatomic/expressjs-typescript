@@ -4,6 +4,7 @@ import axios, { AxiosPromise, AxiosRequestConfig, AxiosRequestHeaders } from 'ax
 import { GithubServices } from '../services/githubServices';
 
 const router = Router();
+const githubServices = new GithubServices();
 
 type Issue = {
     title: string,
@@ -53,19 +54,20 @@ const postComment = (url: string, comment: string): AxiosPromise => {
 // GET issue
 router.get("/api/v1/github/:owner/:repo/issue/:issue_number", async (req: Request, res: Response) => {
     if (req.params.owner && req.params.repo && req.params.issue_number) {
-        const githubServices = new GithubServices();
         try {
             const issue = await githubServices.getIssue(req.params.owner, req.params.repo, req.params.issue_number);
             if (issue != null) {
                 res.status(200).json(issue);
+                return;
             }
         } catch(error) {
             // eslint-disable-next-line no-console
             console.error(error);
-            res.status(500).json({});
+            res.status(500).json({error: 'an internal error occurred'});
+            return;
         }
-        res.status(401).json({error: 'an error occurred'});
     }
+    res.status(401).json({error: 'an error occurred'});
 });
 
 // GET image
