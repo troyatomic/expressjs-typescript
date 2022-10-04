@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import axios, { AxiosPromise, AxiosRequestConfig, AxiosRequestHeaders, AxiosResponse } from 'axios';
 
-export interface GithubIssue {
+export type GithubIssue = {
     title: string,
     id: number,
     body: string | null
 }
 
-export interface GithubCommentResponse {
+export type GithubCommentResponse = {
     message: 'success' | 'failed'
 }
 
@@ -56,7 +56,6 @@ export class GithubServices {
         const url = `${process.env.GITHUB_URL}/repos/${owner}/${repo}/issues/${issueNumber}/comments`;
         try {
             const response: AxiosResponse = await postGithubComment(url, comment);
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
             return response.status < 400 ? { message: 'success' } : { message: 'success' };
         } catch(error) {
             return { message: 'failed'};
