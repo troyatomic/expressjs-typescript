@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import { Request, Response, Router } from 'express';
-import { GithubIssue, GithubCommentResponse, GithubServices } from '../services/githubServices';
+import { GithubIssue, GithubServices } from '../services/githubServices';
 
 const router = Router();
 const githubServices = new GithubServices();
@@ -38,15 +38,18 @@ router.get("/api/v1/github/:owner/:repo/issue/:issue_number", async (req: Reques
 router.get("/api/v1/github/:owner/:repo/issue/:issue_number/image", async(req, res) => {
     try {
         const issue: GithubIssue = await githubServices.getIssue(req.params.owner, req.params.repo, req.params.issue_number);
-        const hasImage = doesIssueHaveImage(issue.body);
-        res.status(200).json({ 'containsImage': hasImage });
-        return;
+        if (issue != null) {
+            const hasImage = doesIssueHaveImage(issue.body);
+            res.status(200).json({ 'containsImage': hasImage });
+            return;
+        }
     } catch(error) {
         // eslint-disable-next-line no-console
         console.error(error);
         res.status(500).json({error: 'an internal error occurred'});
         return;
     }
+    res.status(401).json({error: 'an error occurred'});
 });
 
 // POST comment
@@ -55,12 +58,10 @@ router.post("/api/v1/github/:owner/:repo/issue/:issue_number/comment", async (re
     try {
         const result = await githubServices.postComment(req.params.owner, req.params.repo, req.params.issue_number, comment.body);
         res.status(200).json(result);
-        return;
     } catch(error) {
         // eslint-disable-next-line no-console
         console.error(error);
         res.status(500).json({error: 'an internal error occurred'});
-        return;
     }
 });
 
@@ -78,14 +79,15 @@ router.post("/api/v1/github/:owner/:repo/issue/:issue_number/identify", async (r
             } else {
                 res.status(200).json({ 'containsImage': false });
             }
-        } else {
-            res.status(401).json({error: 'an error occurred'});
+            return;
         }
     } catch(error) {
         // eslint-disable-next-line no-console
         console.error(error);
         res.status(500).json({error: 'an internal error occurred'});
+        return;
     }
+    res.status(401).json({error: 'an error occurred'});
 });
 // };
 
